@@ -1,7 +1,10 @@
 package org.example.domain;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 @Component
-@Scope
+@Scope("prototype")
 public class Account {
     private String id;
     private String userId;

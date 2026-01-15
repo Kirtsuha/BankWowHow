@@ -1,7 +1,12 @@
 package org.example.domain;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 
+@Component
+@Scope("prototype")
 public class User {
     private String id;
     private String login;
