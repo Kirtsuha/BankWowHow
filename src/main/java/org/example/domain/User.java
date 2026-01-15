@@ -8,8 +8,8 @@ import java.util.List;
 @Component
 @Scope("prototype")
 public class User {
-    private String id;
-    private String login;
+    private final String id;
+    private final String login;
     private List<Account> accountList;
 
     public User(String id, String login, List<Account> accountList) {

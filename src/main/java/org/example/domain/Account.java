@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("prototype")
 public class Account {
-    private String id;
-    private String userId;
+    private final String id;
+    private final String userId;
     private long moneyAmount;
 
     Account(String id, String userId, long moneyAmount) {
