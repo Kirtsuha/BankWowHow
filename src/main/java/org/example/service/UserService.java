@@ -22,8 +22,8 @@ public class UserService {
         this.objectProvider = objectProvider;
     }
 
-    public boolean createUser(String login) {
-        if (userRepository.getUserByLogin(login) == null) {
+    public User createUser(String login) {
+        try {
             String id = UUID.randomUUID().toString();
             ArrayList<Account> accountList = new ArrayList<Account>();
             User user = objectProvider.getObject(
@@ -31,9 +31,10 @@ public class UserService {
                     login,
                     accountList);
             userRepository.addUser(user);
-            return true;
+            return user;
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
         }
-        return false;
     }
 
     public List<User> getAllUsers() {
