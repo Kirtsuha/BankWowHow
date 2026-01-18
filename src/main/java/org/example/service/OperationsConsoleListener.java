@@ -3,10 +3,12 @@ package org.example.service;
 import org.example.domain.User;
 import org.example.domain.Account;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Scanner;
 
+@Component
 public class OperationsConsoleListener {
     private Scanner scanner = new Scanner(System.in);
     private UserService userService;
@@ -26,7 +28,7 @@ public class OperationsConsoleListener {
                 "-ACCOUNT_WITHDRAW\n" +
                 "-ACCOUNT_DEPOSIT\n" +
                 "-ACCOUNT_TRANSFER\n" +
-                "-USER_CREATE");
+                "-USER_CREATE\n");
     }
 
     public void logic_switcher() {
@@ -55,7 +57,6 @@ public class OperationsConsoleListener {
                 account_transfer();
                 break;
             default:
-                default_message();
                 break;
         }
         logic_switcher();
@@ -110,7 +111,7 @@ public class OperationsConsoleListener {
             String login = scanner.nextLine();
             User createdUser = userService.createUser(login);
             System.out.print("User created: ");
-            System.out.println(createdUser);
+            System.out.println(printUser(createdUser));
 
         } catch (RuntimeException e) {
             System.out.println(e.getMessage());
@@ -121,7 +122,9 @@ public class OperationsConsoleListener {
         try {
             List<User> users = userService.getAllUsers();
             System.out.println("List of all users:");
-            System.out.println(users);
+            for (int i = 0; i < users.toArray().length; i++) {
+                System.out.println(printUser(users.get(i)));
+            }
         } catch (RuntimeException e) {
             System.out.println(e.getMessage());
         }
@@ -133,7 +136,7 @@ public class OperationsConsoleListener {
             String id = scanner.nextLine();
             Account createdAccount = accountService.createAccount(id);
             System.out.print("Account created: ");
-            System.out.println(createdAccount);
+            System.out.println(printAccount(createdAccount));
         } catch (RuntimeException e) {
             System.out.println(e.getMessage());
         }
@@ -151,8 +154,21 @@ public class OperationsConsoleListener {
         }
     }
 
+    public String printAccount(Account account) {
+        return "Account{id=" + account.getId() +
+                ", user_id=" + account.getUserId() +
+                ", amount=" + account.getMoneyAmount() + "}";
+    }
 
-
-
+    public String printUser(User user) {
+        String result = "User{id=" + user.getId() +
+                ", login=" + user.getLogin() +
+                ", /accountList=[";
+        for (int i = 0; i < user.getAccountList().toArray().length; i++) {
+            result += printAccount(user.getAccountList().get(i));
+        }
+        result += "]}";
+        return result;
+    }
 
 }

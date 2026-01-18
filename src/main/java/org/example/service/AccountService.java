@@ -1,11 +1,14 @@
 package org.example.service;
 
+import org.example.AccountProperties;
 import org.example.domain.Account;
 import org.example.exceptions.AmountShouldBePositiveException;
 import org.example.exceptions.InsufficientFundsException;
 import org.example.exceptions.OnlyAccountException;
 import org.example.repository.AccountRepository;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -13,16 +16,23 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Component
+//@ConfigurationProperties(prefix = "account")
 public class AccountService {
-    private final long default_amount = 500;
-    private final double transfer_commission = 0.15;
+
+    private final long default_amount;
+    private final double transfer_commission;
 
     private final AccountRepository accountRepository;
     private final ObjectProvider<Account> objectProvider;
 
-    public AccountService(AccountRepository accountRepository, ObjectProvider<Account> objectProvider) {
+    @Autowired
+    public AccountService(AccountRepository accountRepository,
+                          ObjectProvider<Account> objectProvider,
+                          AccountProperties accountProperties) {
         this.accountRepository = accountRepository;
         this.objectProvider = objectProvider;
+        this.default_amount = accountProperties.getDefault_amount();
+        this.transfer_commission = accountProperties.getTransfer_commission();
     }
 
     public Account createAccount(String userId) {
