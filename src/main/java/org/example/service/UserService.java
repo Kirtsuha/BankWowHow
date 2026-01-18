@@ -23,18 +23,29 @@ public class UserService {
     }
 
     public User createUser(String login) {
-        try {
-            String id = UUID.randomUUID().toString();
-            ArrayList<Account> accountList = new ArrayList<Account>();
-            User user = objectProvider.getObject(
-                    id,
-                    login,
-                    accountList);
-            userRepository.addUser(user);
-            return user;
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
-        }
+        String id = UUID.randomUUID().toString();
+        ArrayList<Account> accountList = new ArrayList<Account>();
+        User user = objectProvider.getObject(
+                id,
+                login,
+                accountList);
+        userRepository.addUser(user);
+        return user;
+    }
+
+    public User addAccountToUser(String userId, Account account) {
+        User tempUser = userRepository.getUser(userId);
+        tempUser.getAccountList().add(account);
+        return tempUser;
+    }
+
+    public void removeAccountFromUser(String userId, Account account) {
+        User tempUser = userRepository.getUser(userId);
+        tempUser.getAccountList().remove(account);
+    }
+
+    public User getUser(String id) {
+        return userRepository.getUser(id);
     }
 
     public List<User> getAllUsers() {
