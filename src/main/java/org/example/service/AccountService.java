@@ -45,7 +45,7 @@ public class AccountService {
                 throw new OnlyAccountException(id);
             }
             Account otherAccount = result.get();
-            transfer(id, otherAccount.getId(), tempAccount.getMoneyAmount(), false);
+            transfer(id, otherAccount.getId(), tempAccount.getMoneyAmount());
 
             accountRepository.delete(id);
 
@@ -94,7 +94,8 @@ public class AccountService {
         }
     }
 
-    public void transfer(String idSender, String idReceiver, long amount, boolean addCommission) {
+    public void transfer(String idSender, String idReceiver, long amount) {
+        boolean addCommission = accountRepository.read(idSender).getUserId() == accountRepository.read(idReceiver).getUserId();
         withdraw(idSender, amount);
         long new_amount = amount;
         if (addCommission) {
