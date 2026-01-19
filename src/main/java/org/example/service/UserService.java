@@ -1,6 +1,5 @@
 package org.example.service;
 
-import org.example.domain.Account;
 import org.example.domain.User;
 import org.example.repository.UserRepository;
 import org.springframework.beans.factory.ObjectProvider;
@@ -14,7 +13,7 @@ import java.util.UUID;
 @Component
 public class UserService {
     private final UserRepository userRepository;
-    private ObjectProvider<User> objectProvider;
+    private final ObjectProvider<User> objectProvider;
 
     @Autowired
     public UserService(UserRepository userRepository, ObjectProvider<User> objectProvider) {
@@ -24,24 +23,23 @@ public class UserService {
 
     public User createUser(String login) {
         String id = UUID.randomUUID().toString();
-        ArrayList<Account> accountList = new ArrayList<Account>();
+        ArrayList<String> accountIdList = new ArrayList<>();
         User user = objectProvider.getObject(
                 id,
                 login,
-                accountList);
+                accountIdList);
         userRepository.addUser(user);
         return user;
     }
 
-    public User addAccountToUser(String userId, Account account) {
+    public void addAccountToUser(String userId, String accountId) {
         User tempUser = userRepository.getUser(userId);
-        tempUser.getAccountList().add(account);
-        return tempUser;
+        tempUser.getAccountIdList().add(accountId);
     }
 
-    public void removeAccountFromUser(String userId, Account account) {
+    public void removeAccountFromUser(String userId, String accountId) {
         User tempUser = userRepository.getUser(userId);
-        tempUser.getAccountList().remove(account);
+        tempUser.getAccountIdList().remove(accountId);
     }
 
     public User getUser(String id) {

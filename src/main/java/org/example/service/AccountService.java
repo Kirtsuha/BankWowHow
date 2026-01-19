@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -53,7 +53,6 @@ public class AccountService {
                 default_amount
         );
 
-
         return accountRepository.create(account);
     }
 
@@ -72,7 +71,7 @@ public class AccountService {
         return otherAccount;
     }
 
-    public Account deposit(String id, long amount) {
+    public void deposit(String id, long amount) {
         if (amount < 0) {
             throw new AmountShouldBePositiveException(amount);
         }
@@ -83,10 +82,9 @@ public class AccountService {
                 account.getMoneyAmount() + amount
         );
         accountRepository.update(newAccount);
-        return newAccount;
     }
 
-    public Account withdraw(String id, long amount) {
+    public void withdraw(String id, long amount) {
         if (amount < 0) {
             throw new AmountShouldBePositiveException(amount);
         }
@@ -100,16 +98,16 @@ public class AccountService {
                 account.getMoneyAmount() - amount
         );
         accountRepository.update(newAccount);
-        return newAccount;
     }
 
     public void transfer(String idSender, String idReceiver, long amount) {
-        boolean addCommission = accountRepository.read(idSender).getUserId() == accountRepository.read(idReceiver).getUserId();
+        boolean addCommission = !Objects.equals(accountRepository.read(idSender).getUserId(), accountRepository.read(idReceiver).getUserId());
         withdraw(idSender, amount);
         long new_amount = amount;
         if (addCommission) {
             new_amount = (long) (amount * (1 - transfer_commission));
         }
+        //System.out.println("COMMISION: " + addCommission + new_amount);
         deposit(idReceiver, new_amount);
     }
 }
