@@ -2,7 +2,7 @@ package org.example.repository;
 
 import org.example.domain.User;
 import org.example.exceptions.UserAlreadyExistsException;
-import org.example.exceptions.UserWithLoginNotFoundException;
+import org.example.exceptions.UserWithIdNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -15,16 +15,19 @@ public class UserRepository {
     public UserRepository() {}
 
     public User addUser(User user) {
-        if (users.containsKey(user.getId())) {
+        boolean found = users.values().stream()
+                .anyMatch(tempUser -> user.getLogin().equals(tempUser.getLogin()));
+        if (users.containsKey(user.getId()) || found) {
             throw new UserAlreadyExistsException(user.getLogin());
         }
+
         users.put(user.getId(), user);
         return user;
     }
 
     public User getUser(String id) {
         if (!users.containsKey(id)) {
-            throw new UserWithLoginNotFoundException(id);
+            throw new UserWithIdNotFoundException(id);
         }
         return users.get(id);
     }
@@ -44,6 +47,15 @@ public class UserRepository {
 
     public boolean containsKey(String id) {
         return users.containsKey(id);
+    }
+
+    public User updateUser(User user) {
+        if (!users.containsKey(user.getId())) {
+            throw new UserWithIdNotFoundException(user.getId());
+        }
+        users.remove(user.getId());
+        users.put(user.getId(), user);
+        return user;
     }
 
 }

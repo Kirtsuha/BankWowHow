@@ -10,12 +10,12 @@ import java.util.List;
 public class User {
     private final String id;
     private final String login;
-    private List<Account> accountList;
+    private final List<String> accountIdList;
 
-    public User(String id, String login, List<Account> accountList) {
+    public User(String id, String login, List<String> accountIdList) {
         this.id = id;
         this.login = login;
-        this.accountList = accountList;
+        this.accountIdList = accountIdList;
     }
 
     public String getId() {
@@ -24,7 +24,7 @@ public class User {
     public String getLogin() {
         return login;
     }
-    public List<Account> getAccountList() {
-        return accountList;
+    public List<String> getAccountIdList() {
+        return accountIdList;
     }
 }

@@ -1,6 +1,5 @@
 package org.example.service;
 
-import org.example.domain.Account;
 import org.example.domain.User;
 import org.example.repository.UserRepository;
 import org.springframework.beans.factory.ObjectProvider;
@@ -14,7 +13,7 @@ import java.util.UUID;
 @Component
 public class UserService {
     private final UserRepository userRepository;
-    private ObjectProvider<User> objectProvider;
+    private final ObjectProvider<User> objectProvider;
 
     @Autowired
     public UserService(UserRepository userRepository, ObjectProvider<User> objectProvider) {
@@ -23,18 +22,28 @@ public class UserService {
     }
 
     public User createUser(String login) {
-        try {
-            String id = UUID.randomUUID().toString();
-            ArrayList<Account> accountList = new ArrayList<Account>();
-            User user = objectProvider.getObject(
-                    id,
-                    login,
-                    accountList);
-            userRepository.addUser(user);
-            return user;
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
-        }
+        String id = UUID.randomUUID().toString();
+        ArrayList<String> accountIdList = new ArrayList<>();
+        User user = objectProvider.getObject(
+                id,
+                login,
+                accountIdList);
+        userRepository.addUser(user);
+        return user;
+    }
+
+    public void addAccountToUser(String userId, String accountId) {
+        User tempUser = userRepository.getUser(userId);
+        tempUser.getAccountIdList().add(accountId);
+    }
+
+    public void removeAccountFromUser(String userId, String accountId) {
+        User tempUser = userRepository.getUser(userId);
+        tempUser.getAccountIdList().remove(accountId);
+    }
+
+    public User getUser(String id) {
+        return userRepository.getUser(id);
     }
 
     public List<User> getAllUsers() {
