@@ -1,5 +1,7 @@
 plugins {
     id("java")
+    id("org.springframework.boot") version "3.1.0"
+    id("io.spring.dependency-management") version "1.1.0"
 }
 
 group = "org.example"
@@ -10,9 +12,13 @@ repositories {
 }
 
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    // Source: https://mvnrepository.com/artifact/org.springframework/spring-core
+    implementation("org.springframework:spring-core:6.1.13")
+    // Source: https://mvnrepository.com/artifact/org.springframework/spring-context
+    implementation("org.springframework:spring-context:6.1.13")
+    //implementation("org.springframework.boot:spring-boot-starter")
+    //annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
 }
 
 tasks.test {
