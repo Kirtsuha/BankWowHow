@@ -1,30 +1,38 @@
 package org.example.domain;
 
+import jakarta.persistence.*;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
-@Scope("prototype")
+@Entity
 public class User {
-    private final String id;
-    private final String login;
-    private final List<String> accountIdList;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
 
-    public User(String id, String login, List<String> accountIdList) {
+    @Column(name = "login")
+    private String login;
+
+    @OneToMany(mappedBy = "account_id")
+    private List<Account> accountIdList;
+
+    public User(Long id, String login, List<Account> accountIdList) {
         this.id = id;
         this.login = login;
         this.accountIdList = accountIdList;
     }
 
-    public String getId() {
+    public User() {}
+
+    public Long getId() {
         return id;
     }
     public String getLogin() {
         return login;
     }
-    public List<String> getAccountIdList() {
+    public List<Account> getAccountIdList() {
         return accountIdList;
     }
 }

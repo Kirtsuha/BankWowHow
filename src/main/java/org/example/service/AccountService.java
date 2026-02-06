@@ -78,7 +78,7 @@ public class AccountService {
         Account account = accountRepository.read(id);
         Account newAccount = objectProvider.getObject(
                 id,
-                account.getUserId(),
+                account.getUser(),
                 account.getMoneyAmount() + amount
         );
         accountRepository.update(newAccount);
@@ -94,14 +94,14 @@ public class AccountService {
         }
         Account newAccount = objectProvider.getObject(
                 id,
-                account.getUserId(),
+                account.getUser(),
                 account.getMoneyAmount() - amount
         );
         accountRepository.update(newAccount);
     }
 
     public void transfer(String idSender, String idReceiver, long amount) {
-        boolean addCommission = !Objects.equals(accountRepository.read(idSender).getUserId(), accountRepository.read(idReceiver).getUserId());
+        boolean addCommission = !Objects.equals(accountRepository.read(idSender).getUser(), accountRepository.read(idReceiver).getUser());
         withdraw(idSender, amount);
         long new_amount = amount;
         if (addCommission) {

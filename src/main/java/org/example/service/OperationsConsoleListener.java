@@ -172,7 +172,7 @@ public class OperationsConsoleListener {
 
     private String printAccount(Account account) {
         return "Account{id=" + account.getId() +
-                ", user_id=" + account.getUserId() +
+                ", user_id=" + account.getUser() +
                 ", amount=" + account.getMoneyAmount() + "}";
     }
 

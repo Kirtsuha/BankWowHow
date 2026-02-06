@@ -1,26 +1,34 @@
 package org.example.domain;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import jakarta.persistence.*;
 
-@Component
-@Scope("prototype")
+@Entity
+@Table(name = "account")
 public class Account {
-    private final String id;
-    private final String userId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name="user_id", nullable = false)
+    private User user;
+
+    @Column(name="money")
     private long moneyAmount;
 
-    Account(String id, String userId, long moneyAmount) {
+    Account(Long id, User user, long moneyAmount) {
         this.id = id;
-        this.userId = userId;
+        this.user = user;
         this.moneyAmount = moneyAmount;
     }
 
-    public String getId() {
+    public Account() {}
+
+    public Long getId() {
         return id;
     }
-    public String getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
     public long getMoneyAmount() {
         return moneyAmount;

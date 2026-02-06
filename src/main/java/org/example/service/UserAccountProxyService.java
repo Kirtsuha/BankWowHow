@@ -51,7 +51,7 @@ public class UserAccountProxyService {
     public Account account_close(String accountId) {
         Account account = accountService.getAccount(accountId);
         Account otherAccount = accountService.deleteAccount(accountId);
-        userService.removeAccountFromUser(account.getUserId(), accountId);
+        userService.removeAccountFromUser(account.getUser(), accountId);
         return otherAccount;
     }
 }
