@@ -28,22 +28,22 @@ public class UserService {
                 id,
                 login,
                 accountIdList);
-        userRepository.addUser(user);
+        userRepository.create(user);
         return user;
     }
 
     public void addAccountToUser(String userId, String accountId) {
-        User tempUser = userRepository.getUser(userId);
+        User tempUser = userRepository.read(userId);
         tempUser.getAccountIdList().add(accountId);
     }
 
     public void removeAccountFromUser(String userId, String accountId) {
-        User tempUser = userRepository.getUser(userId);
+        User tempUser = userRepository.read(userId);
         tempUser.getAccountIdList().remove(accountId);
     }
 
     public User getUser(String id) {
-        return userRepository.getUser(id);
+        return userRepository.read(id);
     }
 
     public List<User> getAllUsers() {

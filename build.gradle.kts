@@ -20,6 +20,8 @@ dependencies {
     //annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     // Source: https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-core
     implementation("org.hibernate.orm:hibernate-core:7.2.3.Final")
+    // Source: https://mvnrepository.com/artifact/org.projectlombok/lombok
+    implementation("org.projectlombok:lombok:1.18.38")
 
 }
 

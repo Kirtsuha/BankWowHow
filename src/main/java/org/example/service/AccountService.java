@@ -53,7 +53,8 @@ public class AccountService {
                 default_amount
         );
 
-        return accountRepository.create(account);
+        accountRepository.create(account);
+        return account;
     }
 
     public Account deleteAccount(String id) {
@@ -100,7 +101,7 @@ public class AccountService {
         accountRepository.update(newAccount);
     }
 
-    public void transfer(String idSender, String idReceiver, long amount) {
+    public void transfer(Long idSender, Long idReceiver, long amount) {
         boolean addCommission = !Objects.equals(accountRepository.read(idSender).getUser(), accountRepository.read(idReceiver).getUser());
         withdraw(idSender, amount);
         long new_amount = amount;
