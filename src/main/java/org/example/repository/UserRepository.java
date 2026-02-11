@@ -3,59 +3,47 @@ package org.example.repository;
 import org.example.domain.User;
 import org.example.exceptions.UserAlreadyExistsException;
 import org.example.exceptions.UserWithIdNotFoundException;
+import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 @Component
 public class UserRepository {
-    private final HashMap <String, User> users = new HashMap<>();
+    private final SessionFactory sessionFactory;
 
-    public UserRepository() {}
+    public UserRepository(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
 
-    public User addUser(User user) {
-        boolean found = users.values().stream()
-                .anyMatch(tempUser -> user.getLogin().equals(tempUser.getLogin()));
-        if (users.containsKey(user.getId()) || found) {
+    public void create(User user) {
+        var userExists = sessionFactory.getCurrentSession().find(User.class, user.getId()) != null;
+        if (userExists) {
             throw new UserAlreadyExistsException(user.getLogin());
         }
+        sessionFactory.getCurrentSession().persist(user);
+    }
 
-        users.put(user.getId(), user);
+    public User read(Long id) {
+        var user = sessionFactory.getCurrentSession().find(User.class, id);
+        if (user == null) {
+            throw new UserWithIdNotFoundException(id.toString());
+        }
         return user;
     }
 
-    public User getUser(String id) {
-        if (!users.containsKey(id)) {
-            throw new UserWithIdNotFoundException(id);
-        }
-        return users.get(id);
+    public List<User> getAllUsers() {
+        return sessionFactory.getCurrentSession().createQuery("FROM User", User.class).stream().toList();
     }
 
-    public ArrayList<User> getAllUsers() {
-        ArrayList<User> values = new ArrayList<>(users.values());
-        return values;
-    }
+//    public User getUserByLogin(String login) {
+//        return sessionFactory.getCurrentSession()
+//                .createQuery("FROM User U WHERE U.login = :user_login", User.class)
+//                .setParameter("user_login", login).stream().findFirst().orElse(null);
+//    }
 
-    public User getUserByLogin(String login) {
-        User userFound = users.values().stream()
-                .filter(user -> login.equals(user.getLogin()))
-                .findFirst()
-                .orElse(null);
-        return userFound;
-    }
-
-    public boolean containsKey(String id) {
-        return users.containsKey(id);
-    }
-
-    public User updateUser(User user) {
-        if (!users.containsKey(user.getId())) {
-            throw new UserWithIdNotFoundException(user.getId());
-        }
-        users.remove(user.getId());
-        users.put(user.getId(), user);
-        return user;
+    public void update(User user) {
+        sessionFactory.getCurrentSession().persist(user);
     }
 
 }

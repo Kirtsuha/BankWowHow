@@ -1,9 +1,11 @@
 package org.example.domain;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
 @Table(name = "account")
+@Data
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
