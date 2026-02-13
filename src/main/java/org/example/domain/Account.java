@@ -2,13 +2,15 @@ package org.example.domain;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Setter;
 
 @Entity
-@Table(name = "account")
+@Table(name = "accounts")
 @Data
+@Setter
 public class Account {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
@@ -34,5 +36,17 @@ public class Account {
     }
     public long getMoneyAmount() {
         return moneyAmount;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setMoneyAmount(long moneyAmount) {
+        this.moneyAmount = moneyAmount;
     }
 }

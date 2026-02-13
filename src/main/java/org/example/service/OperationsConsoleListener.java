@@ -12,11 +12,13 @@ import java.util.Scanner;
 @Component
 public class OperationsConsoleListener {
     private final Scanner scanner = new Scanner(System.in);
-    private final UserAccountProxyService proxyService;
+    private final AccountService accountService;
+    private final UserService userService;
 
     @Autowired
-    public OperationsConsoleListener(UserAccountProxyService proxyService) {
-        this.proxyService = proxyService;
+    public OperationsConsoleListener(UserService userService, AccountService accountService) {
+        this.accountService = accountService;
+        this.userService = userService;
     }
 
     public void default_message() {
@@ -74,12 +76,12 @@ public class OperationsConsoleListener {
     private void account_transfer() {
         try {
             System.out.println("Enter source account ID:");
-            String sourceId = scanner.nextLine();
+            Long sourceId = scanLong();
             System.out.println("Enter target account ID");
-            String targetId = scanner.nextLine();
+            Long targetId = scanLong();
             System.out.println("Enter amount to transfer:");
             long amount = scanLong();
-            proxyService.account_transfer(sourceId, targetId, amount);
+            accountService.transfer(sourceId, targetId, amount);
             System.out.println("Amount " + amount + " transferred from account ID " + sourceId + " to account " + targetId);
         } catch (RuntimeException e) {
             System.out.println(e.getMessage());
@@ -89,10 +91,10 @@ public class OperationsConsoleListener {
     private void account_deposit() {
         try {
             System.out.println("Enter account ID:");
-            String id = scanner.nextLine();
+            Long id = scanLong();
             System.out.println("Enter amount to deposit:");
             long amount = scanLong();
-            proxyService.account_deposit(id, amount);
+            accountService.deposit(id, amount);
             System.out.println("Amount " + amount + " deposited to account ID: " + id);
         } catch (RuntimeException e) {
             System.out.println(e.getMessage());
@@ -102,10 +104,10 @@ public class OperationsConsoleListener {
     private void account_withdraw() {
         try {
             System.out.println("Enter account ID to withdraw from");
-            String id = scanner.nextLine();
+            Long id = scanLong();
             System.out.println("Enter amount to withdraw:");
             long amount = scanLong();
-            proxyService.account_withdraw(id, amount);
+            accountService.withdraw(id, amount);
             System.out.println("Amount " + amount + " withdrew from account ID: " + id);
 
         } catch (RuntimeException e) {
@@ -117,7 +119,7 @@ public class OperationsConsoleListener {
         try {
             System.out.println("Enter login for new user:");
             String login = scanner.nextLine();
-            User createdUser = proxyService.user_create(login);
+            User createdUser = userService.createUser(login);
             System.out.print("User created: ");
             System.out.println(printUser(createdUser));
 
@@ -128,7 +130,7 @@ public class OperationsConsoleListener {
 
     private void show_all_users() {
         try {
-            List<User> users = proxyService.show_all_users();
+            List<User> users = userService.getAllUsers();
             System.out.println("List of all users:");
             for (User user : users) {
                 System.out.println(printUser(user));
@@ -141,8 +143,8 @@ public class OperationsConsoleListener {
     private void account_create() {
         try {
             System.out.println("Enter the user id for which to create an account: ");
-            String id = scanner.nextLine();
-            Account createdAccount = proxyService.account_create(id);
+            Long id = scanLong();
+            Account createdAccount = accountService.createAccount(userService.getUser(id));
             System.out.print("Account created: ");
             System.out.println(printAccount(createdAccount));
         } catch (RuntimeException e) {
@@ -153,8 +155,8 @@ public class OperationsConsoleListener {
     private void account_close() {
         try {
             System.out.println("Enter account ID to close:");
-            String id = scanner.nextLine();
-            Account otherAccount = proxyService.account_close(id);
+            Long id = scanLong();
+            Account otherAccount = accountService.deleteAccount(id);
             System.out.println("Account with ID " + id + " has been closed.\n");
             System.out.println("Remaining funds transferred to account " + otherAccount.getId());
         } catch (RuntimeException e) {
@@ -180,8 +182,10 @@ public class OperationsConsoleListener {
         StringBuilder result = new StringBuilder("User{id=" + user.getId() +
                 ", login=" + user.getLogin() +
                 ", /accountList=[");
-        for (String accountId : user.getAccountIdList()) {
-            result.append("\n").append(printAccount(proxyService.get_account(accountId))).append(",\n");
+        if (user.getAccounts() != null) {
+            for (Account account : user.getAccounts()) {
+                result.append("\n").append(printAccount(account)).append(",\n");
+            }
         }
         result.append("]}");
         return result.toString();

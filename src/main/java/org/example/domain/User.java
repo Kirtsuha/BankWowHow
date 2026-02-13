@@ -1,12 +1,11 @@
 package org.example.domain;
 
 import jakarta.persistence.*;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Entity
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -15,13 +14,13 @@ public class User {
     @Column(name = "login")
     private String login;
 
-    @OneToMany(mappedBy = "account_id")
-    private List<Account> accountIdList;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Account> accounts;
 
-    public User(Long id, String login, List<Account> accountIdList) {
+    public User(Long id, String login, List<Account> accounts) {
         this.id = id;
         this.login = login;
-        this.accountIdList = accountIdList;
+        this.accounts = accounts;
     }
 
     public User() {}
@@ -32,7 +31,19 @@ public class User {
     public String getLogin() {
         return login;
     }
-    public List<Account> getAccountIdList() {
-        return accountIdList;
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public void setAccounts(List<Account> accountIdList) {
+        this.accounts = accountIdList;
     }
 }

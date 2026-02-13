@@ -1,7 +1,9 @@
 package org.example.service;
 
 import org.example.domain.User;
+import org.example.repository.TransactionHelper;
 import org.example.repository.UserRepository;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,41 +15,44 @@ import java.util.UUID;
 @Component
 public class UserService {
     private final UserRepository userRepository;
-    private final ObjectProvider<User> objectProvider;
+    private final TransactionHelper transactionHelper;
+    private final SessionFactory sessionFactory;
 
     @Autowired
-    public UserService(UserRepository userRepository, ObjectProvider<User> objectProvider) {
+    public UserService(UserRepository userRepository, TransactionHelper transactionHelper, SessionFactory sessionFactory) {
         this.userRepository = userRepository;
-        this.objectProvider = objectProvider;
+        this.transactionHelper = transactionHelper;
+        this.sessionFactory = sessionFactory;
     }
 
     public User createUser(String login) {
-        String id = UUID.randomUUID().toString();
-        ArrayList<String> accountIdList = new ArrayList<>();
-        User user = objectProvider.getObject(
-                id,
-                login,
-                accountIdList);
-        userRepository.create(user);
+        User user = new User();
+        user.setLogin(login);
+        transactionHelper.makeTransactional(sessionFactory.openSession(), session ->  {
+            userRepository.create(session, user);
+            return null;
+        });
         return user;
     }
 
-    public void addAccountToUser(String userId, String accountId) {
-        User tempUser = userRepository.read(userId);
-        tempUser.getAccountIdList().add(accountId);
-    }
+//    public void addAccountToUser(Long userId, Long accountId) {
+//        User tempUser = userRepository.read(userId);
+//        tempUser.getAccountIdList().add(accountId);
+//    }
+//
+//    public void removeAccountFromUser(String userId, String accountId) {
+//        User tempUser = userRepository.read(userId);
+//        tempUser.getAccountIdList().remove(accountId);
+//    }
 
-    public void removeAccountFromUser(String userId, String accountId) {
-        User tempUser = userRepository.read(userId);
-        tempUser.getAccountIdList().remove(accountId);
-    }
-
-    public User getUser(String id) {
-        return userRepository.read(id);
+    public User getUser(Long id) {
+        return transactionHelper.makeTransactional(sessionFactory.openSession(), session ->
+            userRepository.read(session, id)
+        );
     }
 
     public List<User> getAllUsers() {
-        return userRepository.getAllUsers();
+        return transactionHelper.makeTransactional(sessionFactory.openSession(), session -> userRepository.getAllUsers(session));
     }
 
 }
