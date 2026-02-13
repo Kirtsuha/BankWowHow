@@ -3,6 +3,7 @@ package org.example.repository;
 import org.example.domain.User;
 import org.example.exceptions.UserAlreadyExistsException;
 import org.example.exceptions.UserWithIdNotFoundException;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Component;
 
@@ -10,40 +11,35 @@ import java.util.List;
 
 @Component
 public class UserRepository {
-    private final SessionFactory sessionFactory;
 
-    public UserRepository(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
-
-    public void create(User user) {
-        var userExists = sessionFactory.getCurrentSession().find(User.class, user.getId()) != null;
+    public void create(Session session, User user) {
+        var userExists = getUserByLogin(session, user.getLogin()) != null;
         if (userExists) {
             throw new UserAlreadyExistsException(user.getLogin());
         }
-        sessionFactory.getCurrentSession().persist(user);
+        session.persist(user);
     }
 
-    public User read(Long id) {
-        var user = sessionFactory.getCurrentSession().find(User.class, id);
+    public User read(Session session, Long id) {
+        var user = session.find(User.class, id);
         if (user == null) {
             throw new UserWithIdNotFoundException(id.toString());
         }
         return user;
     }
 
-    public List<User> getAllUsers() {
-        return sessionFactory.getCurrentSession().createQuery("FROM User", User.class).stream().toList();
+    public List<User> getAllUsers(Session session) {
+        return session.createQuery("FROM User", User.class).stream().toList();
     }
 
-//    public User getUserByLogin(String login) {
-//        return sessionFactory.getCurrentSession()
-//                .createQuery("FROM User U WHERE U.login = :user_login", User.class)
-//                .setParameter("user_login", login).stream().findFirst().orElse(null);
-//    }
+    private User getUserByLogin(Session session, String login) {
+        return session
+                .createQuery("FROM User U WHERE U.login = :user_login", User.class)
+                .setParameter("user_login", login).stream().findFirst().orElse(null);
+    }
 
-    public void update(User user) {
-        sessionFactory.getCurrentSession().persist(user);
+    public void update(Session session, User user) {
+        session.persist(user);
     }
 
 }

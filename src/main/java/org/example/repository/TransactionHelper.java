@@ -8,22 +8,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 @Component
 
-public class TransactionHelper<T> {
-    private SessionFactory sessionFactory;
-    public TransactionHelper(@Autowired SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
+public class TransactionHelper {
+    public TransactionHelper() {}
 
-    @Transactional
-    public void makeTransactional(Session session, Consumer<T> action) {
+    public<R> R makeTransactional(Session session, Function<Session, R> action) {
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
-            //some work
+            R result = action.apply(session);
             tx.commit();
+            return result;
         } catch (RuntimeException e) {
             if (tx != null) {
                 tx.rollback();
