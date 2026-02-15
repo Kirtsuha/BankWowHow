@@ -1,17 +1,13 @@
 package org.example.repository;
 
-import jakarta.transaction.Transactional;
-import org.example.AccountProperties;
+import org.example.configuration.AccountProperties;
 import org.example.domain.Account;
 import org.example.exceptions.AccountWithIdNotFoundException;
 import org.example.exceptions.AmountShouldBePositiveException;
 import org.example.exceptions.InsufficientFundsException;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 

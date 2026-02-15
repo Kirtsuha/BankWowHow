@@ -1,13 +1,12 @@
 package org.example.service;
 
-import org.example.AccountProperties;
+import org.example.configuration.AccountProperties;
 import org.example.domain.Account;
 import org.example.domain.User;
 import org.example.exceptions.OnlyAccountException;
 import org.example.repository.AccountRepository;
 import org.example.repository.TransactionHelper;
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
